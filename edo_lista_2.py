@@ -133,88 +133,64 @@ class Edo:
     if self.bidimensional == False and self.tridimensional == False:
       if 'euller' in self.methods:
         self.report_euller()
-        self.output['Yt_Euller'] = self.all_y_euller
+        self.output['Y(t) Euller'] = self.all_y_euller
       if 'euller_implicito' in self.methods:
         self.report_euller_implicito()
-        self.output['Yt_Euller_Implicito'] = self.yh
+        self.output['Y(t) Euller Implícito'] = self.yh
       if "rk4" in self.methods:
         self.report_rk4()
-        self.output['Yt_RK4'] = self.all_y_rk4
+        self.output['Y(t) Runge-Kutta 4ª Ordem'] = self.all_y_rk4
       if self.analytic_solution:
         self.analitica_1d()
-        self.output['Yt_Analitica'] = self.all_y_analitica
+        self.output['Y(t) Analítica'] = self.all_y_analitica
     if self.bidimensional or self.tridimensional:
       if 'euller' in self.methods:
         self.report_euller_2d_3d()
-        self.output['Xt_Euller'] = self.all_y_euller_2d[:,0]
-        self.output['Yt_Euller'] = self.all_y_euller_2d[:,1]
+        self.output['X(t) Euller'] = self.all_y_euller_2d[:,0]
+        self.output['Y(t) Euller'] = self.all_y_euller_2d[:,1]
         if self.tridimensional:
-          self.output['Zt_Euller'] = self.all_y_euller_2d[:,2]
+          self.output['Z(t) Euller'] = self.all_y_euller_2d[:,2]
       if 'rk4' in self.methods:
         self.report_rk4_2d_3d()
-        self.output['Xt_RK4'] = self.all_y_rk4_2d[:,0]
-        self.output['Yt_RK4'] = self.all_y_rk4_2d[:,1]
+        self.output['X(t) Runge-Kutta 4ª Ordem'] = self.all_y_rk4_2d[:,0]
+        self.output['Y(t) Runge-Kutta 4ª Ordem'] = self.all_y_rk4_2d[:,1]
         if self.tridimensional:
-          self.output['Zt_RK4'] = self.all_y_rk4_2d[:,2]
+          self.output['Z(t) Runge-Kutta 4ª Ordem'] = self.all_y_rk4_2d[:,2]
       if self.analytic_solution:
         self.analitica_2d_3d()
-        self.output['Xt_Analitica'] = self.all_y_analitica[:,0]
-        self.output['Yt_Analitica'] = self.all_y_analitica[:,1]
+        self.output['X(t) Analítica'] = self.all_y_analitica[:,0]
+        self.output['Y(t) Analítica'] = self.all_y_analitica[:,1]
         if self.tridimensional:
-          self.output['Zt_Analitica'] = self.all_y_rk4_2d[:,2]
+          self.output['Z(t) Analítica'] = self.all_y_rk4_2d[:,2]
       
     return self.output
 
 
   def plot_output(self, variable=None):
-    fig = go.Figure()
+    if self.bidimensional:
+      yaxis = "X(t), Y(t)"
+    elif self.tridimensional:
+      yaxis = "X(t), Y(t), Z(t)"
+    else:
+      yaxis = "Y(t)"
 
-    if self.analytic_solution:
-      if self.bidimensional or self.tridimensional:
-        if variable=="X" or variable==None:
-          fig.add_trace(go.Scatter(x=self.output['Passo'], y=self.output['Xt_Analitica'],
-                            mode='lines',
-                            name='X(t) Analitica'))
-        if self.tridimensional:
-          fig.add_trace(go.Scatter(x=self.output['Passo'], y=self.output['Zt_Analitica'],
-                            mode='lines',
-                            name='Z(t) Analitica'))
-      if variable=="Y" or variable==None:
-        fig.add_trace(go.Scatter(x=self.output['Passo'], y=self.output['Yt_Analitica'],
-                    mode='lines',
-                    name='Y(t) Analitica'))
-    if self.bidimensional or self.tridimensional:
-      if variable=="X" or variable==None:
-        fig.add_trace(go.Scatter(x=self.output['Passo'], y=self.output['Xt_Euller'],
-                          mode='lines',
-                          name='X(t) Euller'))
-        fig.add_trace(go.Scatter(x=self.output['Passo'], y=self.output['Xt_RK4'],
-                    mode='lines',
-                    name='X(t) Runge-Kutta 4ª Ordem'))
-    if variable=="Y" or variable==None:
-      fig.add_trace(go.Scatter(x=self.output['Passo'], y=self.output['Yt_Euller'],
-                        mode='lines',
-                        name='Y(t) Euller',
-                        line = {'color': '#341f97'}))
-      fig.add_trace(go.Scatter(x=self.output['Passo'], y=self.output['Yt_RK4'],
-                        mode='lines',
-                        name='Y(t) Runge-Kutta 4ª Ordem',
-                        line = {'color': '#FF914D'}))
-    if variable != None:
-      fig.update_layout(title_text='Resultados por Método', title_x=0.5,\
-                        xaxis_title='t', yaxis_title=f'{variable}(t)',\
-                        height = 400, width = 600, font={'size':10})
+    fig = go.Figure()
     if variable == None:
-      fig.update_layout(title_text='Resultados por Método', title_x=0.5,\
-                  xaxis_title='t', yaxis_title=f'X(t), Y(t)',\
-                  height = 400, width = 600, font={'size':10})
+      for column in self.output.columns[1:]:
+          fig.add_trace(go.Scatter(x=self.output['Passo'], y=self.output[column],
+                      mode='lines',
+                      name=column))
+    else:
+      for column in self.output.columns[1:]:
+          if column[:1] == variable:
+            fig.add_trace(go.Scatter(x=self.output['Passo'], y=self.output[column],
+                        mode='lines',
+                        name=column))
+
+      
+    fig.update_layout(title_text='Resultados por Método', title_x=0.5,\
+                xaxis_title='t', yaxis_title=f'{yaxis}',\
+                height = 400, width = 600, font={'size':10})
+
     fig.show()
  
-  def plot_error_distribution(self):
-    if self.analytic_solution:
-      fig = px.histogram(self.output, x="Passo", y="Erro", nbins=self.dom,\
-                        color_discrete_sequence=['indianred'])
-      fig.update_layout(title_text='Distribuição de Erro', title_x=0.5,\
-                        xaxis_title='Passo', yaxis_title='Erro',\
-                        height = 400, width = 600, font={'size':10})
-      fig.show()
