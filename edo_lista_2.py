@@ -7,7 +7,7 @@ class Edo:
 
   def __init__(self, y_inicial, dom, a,b, f_function, methods=[], \
                analytic_function=None, all_error=[], output=pd.DataFrame([]), \
-              analytic_solution=False, bidimensional=False):
+              analytic_solution=False, bidimensional=False, tridimensional=False):
     self.y = y_inicial
     self.dom = dom
     self.a = a
@@ -17,6 +17,7 @@ class Edo:
     self.analytic_solution = analytic_solution
     self.analytic_function = analytic_function
     self.bidimensional = bidimensional
+    self.tridimensional = tridimensional
 
     self.h = (self.b - self.a)/self.dom
     self.size = self.dom-1
@@ -41,7 +42,6 @@ class Edo:
   def report_euller(self):
     for i in range(len(self.all_x)-1):
         self.all_y_euller.append(self.all_y_euller[i]+self.h*self.f(self.all_x[i],self.all_y_euller[i]))
-  
 
   def report_euller_implicito(self):
     for i in np.arange(0, len(self.all_x)):
@@ -82,7 +82,7 @@ class Edo:
     for i in range(len(self.all_x)-1):
         self.all_y_analitica.append(self.f_analitica(self.all_x[i], self.all_y_analitica[i]))
 
-  def report_euller_2d(self):
+  def report_euller_2d_3d(self):
     self.all_y_euller_2d = np.zeros((len(self.all_x), len(self.y)))
     k = np.zeros((len(self.all_x), len(self.y)))
     self.all_y_euller_2d[0] = self.y
@@ -91,7 +91,7 @@ class Edo:
       k[i] = self.f(self.all_x[i], self.all_y_euller_2d[i])
       self.all_y_euller_2d[i+1] = self.h*k[i]+self.all_y_euller_2d[i]
 
-  def report_rk4_2d(self):
+  def report_rk4_2d_3d(self):
     self.all_y_rk4_2d = np.zeros((len(self.all_x), len(self.y)))
     self.all_y_rk4_2d[0] = self.y
     for i in range(len(self.all_x)-1):
@@ -118,7 +118,7 @@ class Edo:
   def f_analitica(self, x, y):
     return self.analytic_function(x, y)
 
-  def analitica_2d(self):
+  def analitica_2d_3d(self):
     self.all_y_analitica = np.zeros((len(self.all_x), len(self.y)))
     k = np.zeros((len(self.all_x), len(self.y)))
     self.all_y_analitica[0] = self.y
@@ -130,7 +130,7 @@ class Edo:
   @property
   def df_output(self):
     self.output['Passo'] = self.all_x
-    if self.bidimensional == False:
+    if self.bidimensional == False and self.tridimensional == False:
       if 'euller' in self.methods:
         self.report_euller()
         self.output['Yt_Euller'] = self.all_y_euller
@@ -143,20 +143,26 @@ class Edo:
       if self.analytic_solution:
         self.analitica_1d()
         self.output['Yt_Analitica'] = self.all_y_analitica
-    if self.bidimensional:
+    if self.bidimensional or self.tridimensional:
       if 'euller' in self.methods:
-        self.report_euller_2d()
+        self.report_euller_2d_3d()
         self.output['Xt_Euller'] = self.all_y_euller_2d[:,0]
         self.output['Yt_Euller'] = self.all_y_euller_2d[:,1]
+        if self.tridimensional:
+          self.output['Zt_Euller'] = self.all_y_euller_2d[:,2]
       if 'rk4' in self.methods:
-        self.report_rk4_2d()
+        self.report_rk4_2d_3d()
         self.output['Xt_RK4'] = self.all_y_rk4_2d[:,0]
         self.output['Yt_RK4'] = self.all_y_rk4_2d[:,1]
+        if self.tridimensional:
+          self.output['Zt_RK4'] = self.all_y_rk4_2d[:,2]
       if self.analytic_solution:
-        self.analitica_2d()
+        self.analitica_2d_3d()
         self.output['Xt_Analitica'] = self.all_y_analitica[:,0]
         self.output['Yt_Analitica'] = self.all_y_analitica[:,1]
-
+        if self.tridimensional:
+          self.output['Zt_Analitica'] = self.all_y_rk4_2d[:,2]
+      
     return self.output
 
 
@@ -164,16 +170,20 @@ class Edo:
     fig = go.Figure()
 
     if self.analytic_solution:
-      if self.bidimensional:
+      if self.bidimensional or self.tridimensional:
         if variable=="X" or variable==None:
           fig.add_trace(go.Scatter(x=self.output['Passo'], y=self.output['Xt_Analitica'],
                             mode='lines',
                             name='X(t) Analitica'))
+        if self.tridimensional:
+          fig.add_trace(go.Scatter(x=self.output['Passo'], y=self.output['Zt_Analitica'],
+                            mode='lines',
+                            name='Z(t) Analitica'))
       if variable=="Y" or variable==None:
         fig.add_trace(go.Scatter(x=self.output['Passo'], y=self.output['Yt_Analitica'],
                     mode='lines',
                     name='Y(t) Analitica'))
-    if self.bidimensional:
+    if self.bidimensional or self.tridimensional:
       if variable=="X" or variable==None:
         fig.add_trace(go.Scatter(x=self.output['Passo'], y=self.output['Xt_Euller'],
                           mode='lines',
