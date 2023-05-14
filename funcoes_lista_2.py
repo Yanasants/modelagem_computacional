@@ -76,7 +76,7 @@ def funcao_3_I40neg(t,v):
 
     return vt
 
-def funcao_4(t,y):
+def funcao_4_a(t,y):
     xt = y[0]
     yt = y[1]
     zt = y[2]
@@ -84,5 +84,16 @@ def funcao_4(t,y):
     x_t = 10*yt - 10*xt
     y_t = 28*xt - yt - xt*zt
     z_t = xt*yt - (8/3)*zt
+
+    return x_t, y_t, z_t
+
+def funcao_4_b(t,y):
+    xt = y[0]
+    yt = y[1]
+    zt = y[2]
+
+    x_t = 77.27*(yt + xt*(1-8.375*(10)**-6*xt-yt))
+    y_t = (1/77.27)*(zt-(1+xt)*yt)
+    z_t = 0.161*(xt - zt)
 
     return x_t, y_t, z_t
