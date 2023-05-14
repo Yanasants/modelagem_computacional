@@ -51,7 +51,7 @@ def funcao_2_c(t,y):
 
     return c1t, c2t, c3t
 
-def analitica_3_c(t,y):
+def analitica_2_c(t,y):
     c1 = y[0]
     c2 = y[1]
     c3 = y[2]
@@ -61,3 +61,28 @@ def analitica_3_c(t,y):
     c3t = c1 + (c2+3*c3)*np.exp(-(t/3))*math.cos(t/6) + (-3*c2+c3)*np.exp(-(t/3))*math.sin(t/6)
 
     return c1t, c2t, c3t
+
+def funcao_3_I40neg(t,v):
+    v1sobre2 = 1.5 #*10**-3
+    k = 16 #*10**-3
+    gL = 19 #*10**-3
+    eL = -67 #*10**-3
+    gNa = 74 #*10**-3
+    c = 10 #*10**-6
+    eNa = 60 #*10**-3
+    I = -40
+    m_inf_v = 1/(1+ np.exp((v1sobre2)-v)/k)
+    vt = (I - gL*(v-eL) - gNa*m_inf_v*(v-eNa))/c
+
+    return vt
+
+def funcao_4(t,y):
+    xt = y[0]
+    yt = y[1]
+    zt = y[2]
+
+    x_t = 10*yt - 10*xt
+    y_t = 28*xt - yt - xt*zt
+    z_t = xt*yt - (8/3)*zt
+
+    return x_t, y_t, z_t

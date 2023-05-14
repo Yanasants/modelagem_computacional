@@ -25,8 +25,8 @@ class Edo:
     self.all_y = []
     self.all_y_euller =[self.y]
     self.all_y_analitica = []
-    self.yh = [self.y]
-    self.y_pm = [self.y]
+    self.all_y_euller_implicito = [self.y]
+    self.all_y_ponto_medio = [self.y]
     self.y_newton = [self.y]
     self.all_y_rk4 = [self.y]
 
@@ -45,17 +45,17 @@ class Edo:
 
   def report_euller_implicito(self):
     for i in np.arange(0, len(self.all_x)):
-      if len(self.yh)<=self.size:
+      if len(self.all_y_euller_implicito)<=self.size:
           self.k1 = self.h*self.f(self.all_x[i],self.all_y_euller[i])
           self.k2 = self.h*self.f(self.all_x[i+1],self.all_y_euller[i]+self.k1)
-          self.yh.append(self.yh[i] + ((self.k1+self.k2)/2))
+          self.all_y_euller_implicito.append(self.all_y_euller_implicito[i] + ((self.k1+self.k2)/2))
 
   def report_ponto_medio(self):
     for i in np.arange(0, len(self.all_x)):
-      if len(self.y_pm)<=self.size:
+      if len(self.all_y_ponto_medio)<=self.size:
           self.k1_pm = self.f(self.all_x[i],self.all_y_euller[i])
           self.k2_pm = self.f(self.all_x[i]+(self.h)/2,self.all_y_euller[i]+self.k1_pm*(self.h/2))
-          self.y_pm.append(self.y_pm[i] + self.k2_pm*self.h)
+          self.all_y_ponto_medio.append(self.all_y_ponto_medio[i] + self.k2_pm*self.h)
           
   def report_newton(self):
     for i in np.arange(0, len(self.all_x)):
@@ -136,7 +136,11 @@ class Edo:
         self.output['Y(t) Euller'] = self.all_y_euller
       if 'euller_implicito' in self.methods:
         self.report_euller_implicito()
-        self.output['Y(t) Euller Implícito'] = self.yh
+        self.output['Y(t) Euller Implícito'] = self.all_y_euller_implicito
+      if 'ponto_medio' in self.methods:
+        self.report_euller()
+        self.report_ponto_medio()
+        self.output['Y(t) Ponto médio'] = self.all_y_ponto_medio
       if "rk4" in self.methods:
         self.report_rk4()
         self.output['Y(t) Runge-Kutta 4ª Ordem'] = self.all_y_rk4
