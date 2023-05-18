@@ -122,11 +122,9 @@ class Edo:
 
   def analitica(self):
     self.all_y_analitica = np.zeros((len(self.all_x), len(self.y)))
-    k = np.zeros((len(self.all_x), len(self.y)))
     self.all_y_analitica[0] = self.y
     for i in range(len(self.all_x)-1):
-      k[i] = self.f_analitica(self.all_x[i], self.all_y_analitica[i])
-      self.all_y_analitica[i+1] = k[i]
+      self.all_y_analitica[i+1] = self.f_analitica(self.all_x[i], self.all_y_analitica[i])
       
 
   @property
@@ -162,7 +160,7 @@ class Edo:
         self.report_rk4()
         self.output['X(t) Runge-Kutta 4ª Ordem'] = self.all_y_rk4_2d[:,0]
         self.output['Y(t) Runge-Kutta 4ª Ordem'] = self.all_y_rk4_2d[:,1]
-        if self.tridimensional:
+        if self.tridimensional or self.quadridimensional:
           self.output['Z(t) Runge-Kutta 4ª Ordem'] = self.all_y_rk4_2d[:,2]
         if self.quadridimensional:
           self.output['W(t) Runge-Kutta 4ª Ordem'] = self.all_y_rk4_2d[:,3]
@@ -172,7 +170,7 @@ class Edo:
         if self.bidimensional:
           self.output['X(t) Analítica'] = self.all_y_analitica[:,0]
           self.output['Y(t) Analítica'] = self.all_y_analitica[:,1]
-        if self.tridimensional:
+        if self.tridimensional or self.quadridimensional:
           self.output['Z(t) Analítica'] = self.all_y_rk4_2d[:,2]
         if self.quadridimensional:
           self.output['W(t) Analítica'] = self.all_y_rk4_2d[:,3]
@@ -185,6 +183,8 @@ class Edo:
       yaxis = "X(t), Y(t)"
     elif self.tridimensional:
       yaxis = "X(t), Y(t), Z(t)"
+    elif self.quadridimensional:
+      yaxis = "X(t), Y(t), Z(t), W(t)"
     else:
       yaxis = "Y(t)"
 

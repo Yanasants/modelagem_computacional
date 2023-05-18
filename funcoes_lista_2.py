@@ -98,13 +98,95 @@ def funcao_4_b(t,y):
 
     return x_t, y_t, z_t
 
-def funcao_5(t,y):
-    # k0 = 
+def funcao_5_a_1(t,y):
+    # Copy 1
+    k0, k1, k2, k3, k4 =  0.1425, 0.4785, 0.2568, 0.3691, 0.7655
     wt = y[0]
     xt = y[1]
     pt = y[2]
 
-    # w_t = 
+    w_t = k0*wt - k1*wt + k2*xt
+    x_t = k1*wt - k2*xt - k3*xt
+    p_t = k3*xt - k4*pt
+
+    return w_t, x_t, p_t
+
+def analitica_5_a_1(t,y):
+    # Copy 1
+    k0, k1, k2, k3, k4 =  0.1425, 0.4785, 0.2568, 0.3691, 0.7655
+    A = (-k0 + k1 + k2 + k3)
+    delta = (A**2 - 4*(-k0*k2 - k0*k3 + k1*k3))
+    lambda_1 = -k4
+    lambda_2 = (-A + np.sqrt(delta))/2
+    lambda_3 = (-A - np.sqrt(delta))/2
+
+    w0 = 25
+
+    wt = (w0/(lambda_3 - lambda_2))*(np.exp(lambda_3*t)*(lambda_3 + k2 + k3) - np.exp(lambda_2*t)*(lambda_2 + k2 + k3))
+    xt = ((w0*k1)/(lambda_3-lambda_2))*(np.exp(lambda_3*t) - np.exp(lambda_2*t))
+    pt = ((w0*k1*k3)/(lambda_2*lambda_3*(lambda_3 - lambda_2)))*np.exp(lambda_1*t)*(((np.exp((lambda_3-lambda_1)*t)-1)/(lambda_3-lambda_1))-((np.exp((lambda_2-lambda_1)*t)-1)/(lambda_2-lambda_1)))
+    
+    return wt, xt, pt
+
+def funcao_5_a_2(t,y):
+    # Copy 2
+    k0, k1, k2, k3, k4 =  0.3232, 0.7696, 0.2341, 0.7404, 0.7952
+    wt = y[0]
+    xt = y[1]
+    pt = y[2]
+
+    w_t = k0*wt - k1*wt + k2*xt
+    x_t = k1*wt - k2*xt - k3*xt
+    p_t = k3*xt - k4*pt
+
+    return w_t, x_t, p_t
+
+def analitica_5_a_2(t,y):
+    # Copy 2
+    k0, k1, k2, k3, k4 =  0.3232, 0.7696, 0.2341, 0.7404, 0.7952
+    A = (-k0 + k1 + k2 + k3)
+    delta = (A**2 - 4*(-k0*k2 - k0*k3 + k1*k3))
+    lambda_1 = -k4
+    lambda_2 = (-A + np.sqrt(delta))/2
+    lambda_3 = (-A - np.sqrt(delta))/2
+
+    w0 = 25
+
+    wt = (w0/(lambda_3 - lambda_2))*(np.exp(lambda_3*t)*(lambda_3 + k2 + k3) - np.exp(lambda_2*t)*(lambda_2 + k2 + k3))
+    xt = ((w0*k1)/(lambda_3-lambda_2))*(np.exp(lambda_3*t) - np.exp(lambda_2*t))
+    pt = ((w0*k1*k3)/(lambda_2*lambda_3*(lambda_3 - lambda_2)))*np.exp(lambda_1*t)*(((np.exp((lambda_3-lambda_1)*t)-1)/(lambda_3-lambda_1))-((np.exp((lambda_2-lambda_1)*t)-1)/(lambda_2-lambda_1)))
+    
+    return wt, xt, pt
+
+def funcao_5_a_3(t,y):
+    # Copy 3
+    k0, k1, k2, k3, k4 =  0.1084, 0.8301, 0.2142, 0.4756, 0.1869
+    wt = y[0]
+    xt = y[1]
+    pt = y[2]
+
+    w_t = k0*wt - k1*wt + k2*xt
+    x_t = k1*wt - k2*xt - k3*xt
+    p_t = k3*xt - k4*pt
+
+    return w_t, x_t, p_t
+
+def analitica_5_a_3(t,y):
+    # Copy 2
+    k0, k1, k2, k3, k4 =  0.1084, 0.8301, 0.2142, 0.4756, 0.1869
+    A = (-k0 + k1 + k2 + k3)
+    delta = (A**2 - 4*(-k0*k2 - k0*k3 + k1*k3))
+    lambda_1 = -k4
+    lambda_2 = (-A + np.sqrt(delta))/2
+    lambda_3 = (-A - np.sqrt(delta))/2
+
+    w0 = 25
+
+    wt = (w0/(lambda_3 - lambda_2))*(np.exp(lambda_3*t)*(lambda_3 + k2 + k3) - np.exp(lambda_2*t)*(lambda_2 + k2 + k3))
+    xt = ((w0*k1)/(lambda_3-lambda_2))*(np.exp(lambda_3*t) - np.exp(lambda_2*t))
+    pt = ((w0*k1*k3)/(lambda_2*lambda_3*(lambda_3 - lambda_2)))*np.exp(lambda_1*t)*(((np.exp((lambda_3-lambda_1)*t)-1)/(lambda_3-lambda_1))-((np.exp((lambda_2-lambda_1)*t)-1)/(lambda_2-lambda_1)))
+    
+    return wt, xt, pt
 
 def funcao_6(t,y):
     k1, k2, k3, k4, k5, k6 = 1, 3, 2, 1, 50, 1
