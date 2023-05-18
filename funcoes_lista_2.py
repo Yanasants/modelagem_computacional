@@ -1,5 +1,6 @@
 import numpy as np
 import math
+import plotly.graph_objects as go
 
 def funcao_1(t,y):
     dydt = (t-3.2)*y + 8*t*np.exp(((t-3.2)**2)/2)*math.cos(4*t**2)
@@ -98,7 +99,7 @@ def funcao_4_b(t,y):
 
     return x_t, y_t, z_t
 
-def funcao_5_a_1(t,y):
+def funcao_5_1(t,y):
     # Copy 1
     k0, k1, k2, k3, k4 =  0.1425, 0.4785, 0.2568, 0.3691, 0.7655
     wt = y[0]
@@ -128,7 +129,7 @@ def analitica_5_a_1(t,y):
     
     return wt, xt, pt
 
-def funcao_5_a_2(t,y):
+def funcao_5_2(t,y):
     # Copy 2
     k0, k1, k2, k3, k4 =  0.3232, 0.7696, 0.2341, 0.7404, 0.7952
     wt = y[0]
@@ -158,7 +159,7 @@ def analitica_5_a_2(t,y):
     
     return wt, xt, pt
 
-def funcao_5_a_3(t,y):
+def funcao_5_3(t,y):
     # Copy 3
     k0, k1, k2, k3, k4 =  0.1084, 0.8301, 0.2142, 0.4756, 0.1869
     wt = y[0]
@@ -172,7 +173,7 @@ def funcao_5_a_3(t,y):
     return w_t, x_t, p_t
 
 def analitica_5_a_3(t,y):
-    # Copy 2
+    # Copy 3
     k0, k1, k2, k3, k4 =  0.1084, 0.8301, 0.2142, 0.4756, 0.1869
     A = (-k0 + k1 + k2 + k3)
     delta = (A**2 - 4*(-k0*k2 - k0*k3 + k1*k3))
@@ -187,6 +188,60 @@ def analitica_5_a_3(t,y):
     pt = ((w0*k1*k3)/(lambda_2*lambda_3*(lambda_3 - lambda_2)))*np.exp(lambda_1*t)*(((np.exp((lambda_3-lambda_1)*t)-1)/(lambda_3-lambda_1))-((np.exp((lambda_2-lambda_1)*t)-1)/(lambda_2-lambda_1)))
     
     return wt, xt, pt
+
+def analitica_5_b_1(t,y):
+    # Copy 1
+    k0, k1, k2, k3, k4 =  0.0, 0.01, 0.0, 0.01, 0.1
+
+    A = (-k0 + k1 + k2 + k3)
+    delta = (A**2 - 4*(-k0*k2 - k0*k3 + k1*k3))
+    lambda_1 = -k4
+    lambda_2 = (-A + np.sqrt(delta))/2
+    lambda_3 = (-A - np.sqrt(delta))/2
+
+    w0 = 25
+
+    w_t = w0*np.exp(lambda_2*t)*(1+(lambda_2 + k2 + k3)*t)
+    x_t = w0*k1*t*np.exp(lambda_2*t)
+    p_t = ((w0*k1*k3)/(lambda_2-lambda_1))*np.exp(lambda_1*t)*(np.exp((lambda_2-lambda_1)*t)*(t-(1/(lambda_2-lambda_1))+(1/(lambda_2-lambda_1))))
+
+    return w_t, x_t, p_t
+
+def analitica_5_b_2(t,y):
+    # Copy 2
+    k0, k1, k2, k3, k4 =  0.0, 0.02, 0.0, 0.02, 0.11
+
+    A = (-k0 + k1 + k2 + k3)
+    delta = (A**2 - 4*(-k0*k2 - k0*k3 + k1*k3))
+    lambda_1 = -k4
+    lambda_2 = (-A + np.sqrt(delta))/2
+    lambda_3 = (-A - np.sqrt(delta))/2
+
+    w0 = 25
+
+    w_t = w0*np.exp(lambda_2*t)*(1+(lambda_2 + k2 + k3)*t)
+    x_t = w0*k1*t*np.exp(lambda_2*t)
+    p_t = ((w0*k1*k3)/(lambda_2-lambda_1))*np.exp(lambda_1*t)*(np.exp((lambda_2-lambda_1)*t)*(t-(1/(lambda_2-lambda_1))+(1/(lambda_2-lambda_1))))
+
+    return w_t, x_t, p_t
+
+def analitica_5_b_3(t,y):
+    # Copy 1
+    k0, k1, k2, k3, k4 =  0.0, 0.03, 0.0, 0.03, 0.12
+
+    A = (-k0 + k1 + k2 + k3)
+    delta = (A**2 - 4*(-k0*k2 - k0*k3 + k1*k3))
+    lambda_1 = -k4
+    lambda_2 = (-A + np.sqrt(delta))/2
+    lambda_3 = (-A - np.sqrt(delta))/2
+
+    w0 = 25
+
+    w_t = w0*np.exp(lambda_2*t)*(1+(lambda_2 + k2 + k3)*t)
+    x_t = w0*k1*t*np.exp(lambda_2*t)
+    p_t = ((w0*k1*k3)/(lambda_2-lambda_1))*np.exp(lambda_1*t)*(np.exp((lambda_2-lambda_1)*t)*(t-(1/(lambda_2-lambda_1))+(1/(lambda_2-lambda_1))))
+
+    return w_t, x_t, p_t
 
 def funcao_6(t,y):
     k1, k2, k3, k4, k5, k6 = 1, 3, 2, 1, 50, 1
@@ -211,3 +266,25 @@ def funcao_6(t,y):
 
     return x_t, y_t, z_t, w_t
 
+def special_plot(variable, dataset, title):
+    fig = go.Figure()
+    for column in dataset.columns:
+        if column[-1:] == "x":
+            dataset = dataset.rename(columns={column:f"{column[:-2]} Copy 1"})
+        elif column[-1:] == "y":
+            dataset = dataset.rename(columns={column:f"{column[:-2]} Copy 2"})
+        else:
+            if column != "Passo":
+                dataset = dataset.rename(columns={column:f"{column} Copy 3"})
+            
+    for column in dataset.columns:
+        if column[:1] == variable:
+            fig.add_trace(go.Scatter(x=dataset['Passo'], y=dataset[column],
+                        mode='lines',
+                        name=column))
+          
+    fig.update_layout(title_text='Resultados por Método', title_x=0.5,\
+                xaxis_title='t', yaxis_title=f'{title}',\
+                height = 400, width = 600, font={'size':10})
+
+    fig.show()

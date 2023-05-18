@@ -167,7 +167,7 @@ class Edo:
       if self.analytic_solution:
         self.analitica()
         self.output['Y(t) Analítica'] = self.all_y_analitica[:,0]
-        if self.bidimensional:
+        if self.bidimensional or self.tridimensional or self.quadridimensional:
           self.output['X(t) Analítica'] = self.all_y_analitica[:,0]
           self.output['Y(t) Analítica'] = self.all_y_analitica[:,1]
         if self.tridimensional or self.quadridimensional:
