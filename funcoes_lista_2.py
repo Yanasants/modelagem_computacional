@@ -97,3 +97,35 @@ def funcao_4_b(t,y):
     z_t = 0.161*(xt - zt)
 
     return x_t, y_t, z_t
+
+def funcao_5(t,y):
+    # k0 = 
+    wt = y[0]
+    xt = y[1]
+    pt = y[2]
+
+    # w_t = 
+
+def funcao_6(t,y):
+    k1, k2, k3, k4, k5, k6 = 1, 3, 2, 1, 50, 1
+
+    if (t <= 50):
+        input = 0.5
+    elif (50< t <= 100):
+        input = 1
+    elif(100 < t <= 150):
+        input = 1.5
+    elif(150 < t <= 200):
+        input = 1
+    elif(200 < t <= 250):
+        input = 0.5
+
+    xt, yt, zt, wt = y[0], y[1], y[2], y[3]
+
+    x_t = k1*wt - k2*xt
+    y_t = k3*input*xt - k4*yt
+    z_t = k4*yt - k5*zt*wt
+    w_t = k6 - k5*zt*wt
+
+    return x_t, y_t, z_t, w_t
+

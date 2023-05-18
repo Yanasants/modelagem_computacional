@@ -7,7 +7,8 @@ class Edo:
 
   def __init__(self, y_inicial, dom, a,b, f_function, methods=[], \
                analytic_function=None, all_error=[], output=pd.DataFrame([]), \
-              analytic_solution=False, bidimensional=False, tridimensional=False):
+              analytic_solution=False, bidimensional=False, tridimensional=False, \
+              quadridimensional=False):
     self.y = y_inicial
     self.dom = dom
     self.a = a
@@ -18,6 +19,7 @@ class Edo:
     self.analytic_function = analytic_function
     self.bidimensional = bidimensional
     self.tridimensional = tridimensional
+    self.quadridimensional = quadridimensional
 
     self.h = (self.b - self.a)/self.dom
     self.size = self.dom-1
@@ -39,25 +41,25 @@ class Edo:
   def f(self, x, y):
     return self.f_function(x, y)
 
-  def report_euller(self):
+  def report_euller_1d(self):
     for i in range(len(self.all_x)-1):
         self.all_y_euller.append(self.all_y_euller[i]+self.h*self.f(self.all_x[i],self.all_y_euller[i]))
 
-  def report_euller_implicito(self):
+  def report_euller_implicito_1d(self):
     for i in np.arange(0, len(self.all_x)):
       if len(self.all_y_euller_implicito)<=self.size:
           self.k1 = self.h*self.f(self.all_x[i],self.all_y_euller[i])
           self.k2 = self.h*self.f(self.all_x[i+1],self.all_y_euller[i]+self.k1)
           self.all_y_euller_implicito.append(self.all_y_euller_implicito[i] + ((self.k1+self.k2)/2))
 
-  def report_ponto_medio(self):
+  def report_ponto_medio_1d(self):
     for i in np.arange(0, len(self.all_x)):
       if len(self.all_y_ponto_medio)<=self.size:
           self.k1_pm = self.f(self.all_x[i],self.all_y_euller[i])
           self.k2_pm = self.f(self.all_x[i]+(self.h)/2,self.all_y_euller[i]+self.k1_pm*(self.h/2))
           self.all_y_ponto_medio.append(self.all_y_ponto_medio[i] + self.k2_pm*self.h)
           
-  def report_newton(self):
+  def report_newton_1d(self):
     for i in np.arange(0, len(self.all_x)):
       if len(self.y_newton)<=self.size:
           z = self.y_newton[i]+self.f(self.all_x[i], self.y_newton[i])*self.h
@@ -69,7 +71,7 @@ class Edo:
             count+=1
           self.y_newton.append(z)
 
-  def report_rk4(self):
+  def report_rk4_1d(self):
     for i in range(len(self.all_x)-1):
       k1 = self.h*np.array((self.f(self.all_x[i], self.all_y_rk4[i])))
       k2 = self.h*np.array(self.f(self.all_x[i]+self.h/2, self.all_y_rk4[i]+k1/2))
@@ -82,7 +84,7 @@ class Edo:
     for i in range(len(self.all_x)-1):
         self.all_y_analitica.append(self.f_analitica(self.all_x[i], self.all_y_analitica[i]))
 
-  def report_euller_2d_3d(self):
+  def report_euller(self):
     self.all_y_euller_2d = np.zeros((len(self.all_x), len(self.y)))
     k = np.zeros((len(self.all_x), len(self.y)))
     self.all_y_euller_2d[0] = self.y
@@ -91,7 +93,7 @@ class Edo:
       k[i] = self.f(self.all_x[i], self.all_y_euller_2d[i])
       self.all_y_euller_2d[i+1] = self.h*k[i]+self.all_y_euller_2d[i]
 
-  def report_rk4_2d_3d(self):
+  def report_rk4(self):
     self.all_y_rk4_2d = np.zeros((len(self.all_x), len(self.y)))
     self.all_y_rk4_2d[0] = self.y
     for i in range(len(self.all_x)-1):
@@ -118,7 +120,7 @@ class Edo:
   def f_analitica(self, x, y):
     return self.analytic_function(x, y)
 
-  def analitica_2d_3d(self):
+  def analitica(self):
     self.all_y_analitica = np.zeros((len(self.all_x), len(self.y)))
     k = np.zeros((len(self.all_x), len(self.y)))
     self.all_y_analitica[0] = self.y
@@ -130,42 +132,50 @@ class Edo:
   @property
   def df_output(self):
     self.output['Passo'] = self.all_x
-    if self.bidimensional == False and self.tridimensional == False:
+    if self.bidimensional == False and self.tridimensional == False and self.quadridimensional==False:
       if 'euller' in self.methods:
-        self.report_euller()
+        self.report_euller_1d()
         self.output['Y(t) Euller'] = self.all_y_euller
       if 'euller_implicito' in self.methods:
-        self.report_euller_implicito()
+        self.report_euller_implicito_1d()
         self.output['Y(t) Euller Implícito'] = self.all_y_euller_implicito
       if 'ponto_medio' in self.methods:
-        self.report_euller()
-        self.report_ponto_medio()
+        self.report_euller_1d()
+        self.report_ponto_medio_1d()
         self.output['Y(t) Ponto médio'] = self.all_y_ponto_medio
       if "rk4" in self.methods:
-        self.report_rk4()
+        self.report_rk4_1d()
         self.output['Y(t) Runge-Kutta 4ª Ordem'] = self.all_y_rk4
       if self.analytic_solution:
         self.analitica_1d()
         self.output['Y(t) Analítica'] = self.all_y_analitica
-    if self.bidimensional or self.tridimensional:
+    if self.bidimensional or self.tridimensional or self.quadridimensional:
       if 'euller' in self.methods:
-        self.report_euller_2d_3d()
+        self.report_euller()
         self.output['X(t) Euller'] = self.all_y_euller_2d[:,0]
         self.output['Y(t) Euller'] = self.all_y_euller_2d[:,1]
-        if self.tridimensional:
+        if self.tridimensional or self.quadridimensional:
           self.output['Z(t) Euller'] = self.all_y_euller_2d[:,2]
+        if self.quadridimensional:
+          self.output['W(t) Euller'] = self.all_y_euller_2d[:,3]
       if 'rk4' in self.methods:
-        self.report_rk4_2d_3d()
+        self.report_rk4()
         self.output['X(t) Runge-Kutta 4ª Ordem'] = self.all_y_rk4_2d[:,0]
         self.output['Y(t) Runge-Kutta 4ª Ordem'] = self.all_y_rk4_2d[:,1]
         if self.tridimensional:
           self.output['Z(t) Runge-Kutta 4ª Ordem'] = self.all_y_rk4_2d[:,2]
+        if self.quadridimensional:
+          self.output['W(t) Runge-Kutta 4ª Ordem'] = self.all_y_rk4_2d[:,3]
       if self.analytic_solution:
-        self.analitica_2d_3d()
-        self.output['X(t) Analítica'] = self.all_y_analitica[:,0]
-        self.output['Y(t) Analítica'] = self.all_y_analitica[:,1]
+        self.analitica()
+        self.output['Y(t) Analítica'] = self.all_y_analitica[:,0]
+        if self.bidimensional:
+          self.output['X(t) Analítica'] = self.all_y_analitica[:,0]
+          self.output['Y(t) Analítica'] = self.all_y_analitica[:,1]
         if self.tridimensional:
           self.output['Z(t) Analítica'] = self.all_y_rk4_2d[:,2]
+        if self.quadridimensional:
+          self.output['W(t) Analítica'] = self.all_y_rk4_2d[:,3]
       
     return self.output
 
