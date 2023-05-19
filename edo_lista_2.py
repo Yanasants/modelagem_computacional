@@ -31,9 +31,8 @@ class Edo:
     self.all_y_ponto_medio = [self.y]
     self.y_newton = [self.y]
     self.all_y_rk4 = [self.y]
+    self.all_y_heuen = [self.y]
 
-    self.all_y_euller_2d = None
-    self.all_y_rk4_2d = None
     self.all_y_adbash2 = None
     self.all_error = all_error
     self.output = pd.DataFrame([])
@@ -71,6 +70,14 @@ class Edo:
             count+=1
           self.y_newton.append(z)
 
+  def report_heuen_1d(self):
+    self.all_y_heuen = np.zeros(len(self.all_x))
+    self.all_y_heuen[0] = self.y
+    for i in range(1, len(self.all_x)):
+      k1 = self.h*self.f(self.all_x[i-1], self.all_y_heuen[i-1])
+      k2 = self.h*self.f(self.all_x[i], self.all_y_heuen[i-1]+k1)
+      self.all_y_heuen[i] = self.all_y_heuen[i-1] + (k1+k2)/2
+
   def report_rk4_1d(self):
     for i in range(len(self.all_x)-1):
       k1 = self.h*np.array((self.f(self.all_x[i], self.all_y_rk4[i])))
@@ -85,23 +92,31 @@ class Edo:
         self.all_y_analitica.append(self.f_analitica(self.all_x[i], self.all_y_analitica[i]))
 
   def report_euller(self):
-    self.all_y_euller_2d = np.zeros((len(self.all_x), len(self.y)))
+    self.all_y_euller = np.zeros((len(self.all_x), len(self.y)))
     k = np.zeros((len(self.all_x), len(self.y)))
-    self.all_y_euller_2d[0] = self.y
+    self.all_y_euller[0] = self.y
 
     for i in range(len(self.all_x)-1):
-      k[i] = self.f(self.all_x[i], self.all_y_euller_2d[i])
-      self.all_y_euller_2d[i+1] = self.h*k[i]+self.all_y_euller_2d[i]
+      k[i] = self.f(self.all_x[i], self.all_y_euller[i])
+      self.all_y_euller[i+1] = self.h*k[i]+self.all_y_euller[i]
+
+  def report_heuen(self):
+    self.all_y_heuen = np.zeros((len(self.all_x), len(self.y)))
+    self.all_y_heuen[0] = self.y
+    for i in range(1, len(self.all_x)):
+      k1 = self.h*np.array(self.f(self.all_x[i-1], self.all_y_heuen[i-1]))
+      k2 = self.h*np.array(self.f(self.all_x[i], self.all_y_heuen[i-1]+k1))
+      self.all_y_heuen[i] = self.all_y_heuen[i-1] + (k1+k2)/2
 
   def report_rk4(self):
-    self.all_y_rk4_2d = np.zeros((len(self.all_x), len(self.y)))
-    self.all_y_rk4_2d[0] = self.y
+    self.all_y_rk4 = np.zeros((len(self.all_x), len(self.y)))
+    self.all_y_rk4[0] = self.y
     for i in range(len(self.all_x)-1):
-      k1 = self.h*np.array((self.f(self.all_x[i], self.all_y_rk4_2d[i])))
-      k2 = self.h*np.array(self.f(self.all_x[i]+self.h/2, self.all_y_rk4_2d[i]+k1/2))
-      k3 = self.h*np.array(self.f(self.all_x[i]+self.h/2, self.all_y_rk4_2d[i]+k2/2))
-      k4 = self.h*np.array(self.f(self.all_x[i]+self.h, self.all_y_rk4_2d[i]+k3))
-      self.all_y_rk4_2d[i+1] = self.all_y_rk4_2d[i] + (k1 + 2*k2 +2*k3 + k4)/6
+      k1 = self.h*np.array((self.f(self.all_x[i], self.all_y_rk4[i])))
+      k2 = self.h*np.array(self.f(self.all_x[i]+self.h/2, self.all_y_rk4[i]+k1/2))
+      k3 = self.h*np.array(self.f(self.all_x[i]+self.h/2, self.all_y_rk4[i]+k2/2))
+      k4 = self.h*np.array(self.f(self.all_x[i]+self.h, self.all_y_rk4[i]+k3))
+      self.all_y_rk4[i+1] = self.all_y_rk4[i] + (k1 + 2*k2 +2*k3 + k4)/6
 
   def adbash2(self):
     self.all_y_adbash2 = np.zeros(len(self.all_x))
@@ -141,6 +156,9 @@ class Edo:
         self.report_euller_1d()
         self.report_ponto_medio_1d()
         self.output['Y(t) Ponto médio'] = self.all_y_ponto_medio
+      if 'heuen' in self.methods:
+        self.report_heuen_1d()
+        self.output['Y(t) Heuen'] = self.all_y_heuen
       if "rk4" in self.methods:
         self.report_rk4_1d()
         self.output['Y(t) Runge-Kutta 4ª Ordem'] = self.all_y_rk4
@@ -150,20 +168,28 @@ class Edo:
     if self.bidimensional or self.tridimensional or self.quadridimensional:
       if 'euller' in self.methods:
         self.report_euller()
-        self.output['X(t) Euller'] = self.all_y_euller_2d[:,0]
-        self.output['Y(t) Euller'] = self.all_y_euller_2d[:,1]
+        self.output['X(t) Euller'] = self.all_y_euller[:,0]
+        self.output['Y(t) Euller'] = self.all_y_euller[:,1]
         if self.tridimensional or self.quadridimensional:
-          self.output['Z(t) Euller'] = self.all_y_euller_2d[:,2]
+          self.output['Z(t) Euller'] = self.all_y_euller[:,2]
         if self.quadridimensional:
-          self.output['W(t) Euller'] = self.all_y_euller_2d[:,3]
+          self.output['W(t) Euller'] = self.all_y_euller[:,3]
+      if 'heuen' in self.methods:
+        self.report_heuen()
+        self.output['X(t) Heuen'] = self.all_y_heuen[:,0]
+        self.output['Y(t) Heuen'] = self.all_y_heuen[:,1]
+        if self.tridimensional or self.quadridimensional:
+          self.output['Z(t) Heuen'] = self.all_y_heuen[:,2]
+        if self.quadridimensional:
+          self.output['W(t) Heuen'] = self.all_y_heuen[:,3]
       if 'rk4' in self.methods:
         self.report_rk4()
-        self.output['X(t) Runge-Kutta 4ª Ordem'] = self.all_y_rk4_2d[:,0]
-        self.output['Y(t) Runge-Kutta 4ª Ordem'] = self.all_y_rk4_2d[:,1]
+        self.output['X(t) Runge-Kutta 4ª Ordem'] = self.all_y_rk4[:,0]
+        self.output['Y(t) Runge-Kutta 4ª Ordem'] = self.all_y_rk4[:,1]
         if self.tridimensional or self.quadridimensional:
-          self.output['Z(t) Runge-Kutta 4ª Ordem'] = self.all_y_rk4_2d[:,2]
+          self.output['Z(t) Runge-Kutta 4ª Ordem'] = self.all_y_rk4[:,2]
         if self.quadridimensional:
-          self.output['W(t) Runge-Kutta 4ª Ordem'] = self.all_y_rk4_2d[:,3]
+          self.output['W(t) Runge-Kutta 4ª Ordem'] = self.all_y_rk4[:,3]
       if self.analytic_solution:
         self.analitica()
         self.output['Y(t) Analítica'] = self.all_y_analitica[:,0]
@@ -171,9 +197,9 @@ class Edo:
           self.output['X(t) Analítica'] = self.all_y_analitica[:,0]
           self.output['Y(t) Analítica'] = self.all_y_analitica[:,1]
         if self.tridimensional or self.quadridimensional:
-          self.output['Z(t) Analítica'] = self.all_y_rk4_2d[:,2]
+          self.output['Z(t) Analítica'] = self.all_y_rk4[:,2]
         if self.quadridimensional:
-          self.output['W(t) Analítica'] = self.all_y_rk4_2d[:,3]
+          self.output['W(t) Analítica'] = self.all_y_rk4[:,3]
       
     return self.output
 
