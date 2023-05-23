@@ -63,16 +63,99 @@ def analitica_2_c(t,y):
 
     return c1t, c2t, c3t
 
-def funcao_3_I40neg(t,v):
-    v1sobre2 = 1.5 #*10**-3
-    k = 16 #*10**-3
-    gL = 19 #*10**-3
-    eL = -67 #*10**-3
-    gNa = 74 #*10**-3
-    c = 10 #*10**-6
-    eNa = 60 #*10**-3
+
+def funcao_3_a_menos40(t,v):
+    v1sobre2 = 1.5 
+    k = 16
+    gL = 19 
+    eL = -67
+    gNa = 74
+    c = 10 
+    eNa = 60 
     I = -40
-    m_inf_v = 1/(1+ np.exp((v1sobre2)-v)/k)
+
+    m_inf_v = 1/(1 + np.exp((v1sobre2-v)/k))
+    vt = (I - gL*(v-eL) - gNa*m_inf_v*(v-eNa))/c
+
+    return vt
+
+    
+def funcao_3_a_menos40(t,v):
+    v1sobre2, k, gL, eL, gNa, c, eNa, I = 1.5, 16, 19, -67, 74, 10, 60, -40
+
+    m_inf_v = 1/(1 + np.exp((v1sobre2-v)/k))
+    vt = (I - gL*(v-eL) - gNa*m_inf_v*(v-eNa))/c
+
+    return vt
+
+def funcao_3_a_menos30(t,v):
+    v1sobre2, k, gL, eL, gNa, c, eNa, I = 1.5, 16, 19, -67, 74, 10, 60, -30
+
+    m_inf_v = 1/(1 + np.exp((v1sobre2-v)/k))
+    vt = (I - gL*(v-eL) - gNa*m_inf_v*(v-eNa))/c
+
+    return vt
+
+def funcao_3_a_menos20(t,v):
+    v1sobre2, k, gL, eL, gNa, c, eNa, I = 1.5, 16, 19, -67, 74, 10, 60, -20
+
+    m_inf_v = 1/(1 + np.exp((v1sobre2-v)/k))
+    vt = (I - gL*(v-eL) - gNa*m_inf_v*(v-eNa))/c
+
+    return vt
+
+def funcao_3_a_menos10(t,v):
+    v1sobre2, k, gL, eL, gNa, c, eNa, I = 1.5, 16, 19, -67, 74, 10, 60, -10
+
+    m_inf_v = 1/(1 + np.exp((v1sobre2-v)/k))
+    vt = (I - gL*(v-eL) - gNa*m_inf_v*(v-eNa))/c
+
+    return vt
+
+def funcao_3_a_0(t,v):
+    v1sobre2, k, gL, eL, gNa, c, eNa, I = 1.5, 16, 19, -67, 74, 10, 60, 0
+
+    m_inf_v = 1/(1 + np.exp((v1sobre2-v)/k))
+    vt = (I - gL*(v-eL) - gNa*m_inf_v*(v-eNa))/c
+
+    return vt
+
+def funcao_3_a_mais10(t,v):
+    v1sobre2, k, gL, eL, gNa, c, eNa, I = 1.5, 16, 19, -67, 74, 10, 60, 10
+
+    m_inf_v = 1/(1 + np.exp((v1sobre2-v)/k))
+    vt = (I - gL*(v-eL) - gNa*m_inf_v*(v-eNa))/c
+
+    return vt
+
+def funcao_3_a_mais20(t,v):
+    v1sobre2, k, gL, eL, gNa, c, eNa, I = 1.5, 16, 19, -67, 74, 10, 60, 20
+
+    m_inf_v = 1/(1 + np.exp((v1sobre2-v)/k))
+    vt = (I - gL*(v-eL) - gNa*m_inf_v*(v-eNa))/c
+
+    return vt
+
+def funcao_3_a_mais30(t,v):
+    v1sobre2, k, gL, eL, gNa, c, eNa, I = 1.5, 16, 19, -67, 74, 10, 60, 30
+
+    m_inf_v = 1/(1 + np.exp((v1sobre2-v)/k))
+    vt = (I - gL*(v-eL) - gNa*m_inf_v*(v-eNa))/c
+
+    return vt
+
+def funcao_3_a_mais40(t,v):
+    v1sobre2, k, gL, eL, gNa, c, eNa, I = 1.5, 16, 19, -67, 74, 10, 60, 40
+
+    m_inf_v = 1/(1 + np.exp((v1sobre2-v)/k))
+    vt = (I - gL*(v-eL) - gNa*m_inf_v*(v-eNa))/c
+
+    return vt
+
+def funcao_3_b(t,v):
+    v1sobre2, k, gL, eL, gNa, c, eNa, I = 1.5, 16, 19, -67, 74, 10, 60, -1000
+
+    m_inf_v = 1/(1 + np.exp((v1sobre2-v)/k))
     vt = (I - gL*(v-eL) - gNa*m_inf_v*(v-eNa))/c
 
     return vt
@@ -93,7 +176,7 @@ def funcao_4_b(t,y):
     yt = y[1]
     zt = y[2]
 
-    x_t = 77.27*(yt + xt*(1-8.375*(10)**-6*xt-yt))
+    x_t = 77.27*(yt + xt*(1-8.375*(10**-6)*xt-yt))
     y_t = (1/77.27)*(zt-(1+xt)*yt)
     z_t = 0.161*(xt - zt)
 
@@ -283,6 +366,26 @@ def special_plot(variable, dataset, title):
                         mode='lines',
                         name=column))
           
+    fig.update_layout(title_text='Resultados por Método', title_x=0.5,\
+                xaxis_title='t', yaxis_title=f'{title}',\
+                height = 400, width = 600, font={'size':10})
+
+    fig.show()
+
+def special_plot_q3(all_var, all_var_datasets, title, v0=None, I=None):
+    title = "Variações de I"
+    fig = go.Figure()
+    if I==None:
+        for i in range(len(all_var)):
+            fig.add_trace(go.Scatter(x=all_var_datasets[i]['Passo'], y=all_var_datasets[i]['Y(t) Runge-Kutta 4ª Ordem'],
+                                mode='lines',
+                                name=f"V0 = {v0} | I = {all_var[i]}"))
+    if v0 == None:
+        for i in range(len(all_var)):
+            fig.add_trace(go.Scatter(x=all_var_datasets[i]['Passo'], y=all_var_datasets[i]['Y(t) Runge-Kutta 4ª Ordem'],
+                                mode='lines',
+                                name=f"I = {I} | V0 = {all_var[i]}")) 
+        
     fig.update_layout(title_text='Resultados por Método', title_x=0.5,\
                 xaxis_title='t', yaxis_title=f'{title}',\
                 height = 400, width = 600, font={'size':10})

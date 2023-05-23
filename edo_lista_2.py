@@ -53,9 +53,8 @@ class Edo:
 
   def report_ponto_medio_1d(self):
     for i in np.arange(0, len(self.all_x)):
-      if len(self.all_y_ponto_medio)<=self.size:
-          self.k1_pm = self.f(self.all_x[i],self.all_y_euller[i])
-          self.k2_pm = self.f(self.all_x[i]+(self.h)/2,self.all_y_euller[i]+self.k1_pm*(self.h/2))
+          self.k1_pm = self.f(self.all_x[i],self.all_y_ponto_medio[i])
+          self.k2_pm = self.f(self.all_x[i]+(self.h)/2,self.all_y_ponto_medio[i]+self.k1_pm*(self.h/2))
           self.all_y_ponto_medio.append(self.all_y_ponto_medio[i] + self.k2_pm*self.h)
           
   def report_newton_1d(self):
@@ -153,7 +152,6 @@ class Edo:
         self.report_euller_implicito_1d()
         self.output['Y(t) Euller Implícito'] = self.all_y_euller_implicito
       if 'ponto_medio' in self.methods:
-        self.report_euller_1d()
         self.report_ponto_medio_1d()
         self.output['Y(t) Ponto médio'] = self.all_y_ponto_medio
       if 'heuen' in self.methods:
