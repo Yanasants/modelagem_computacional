@@ -349,6 +349,23 @@ def funcao_6(t,y):
 
     return x_t, y_t, z_t, w_t
 
+def funcao_7(t,y):
+    y0, y1, y2 = y[0], y[1], y[2]
+
+    f, kd, ktc, ktd = 0.6, 10**-5, 10**8, 10**8
+    kp, kfm = 165.9, 4.021
+    I, M = 0.0083, 1.96
+
+    dy0dt = 2*f*kd*I - (ktc + ktd)*y0**2
+    dy1dt = kp*M*y0 + kfm*M*(y0 - y1) - (ktc + ktd)*y0*y1
+    dy2dt = kp*M*(2*y1+y0) + kfm*M*(y0-y2) - (ktc+ktd)*y0*y2
+    dq0dt = kfm*M*y0 + ((ktc/2)+ktd)*y0**2
+    dq1dt = kfm*M*y1 + (ktc+ktd)*y0*y1
+    dq2dt = kfm*M*y2 + (ktc+ktd)*y0*y2 + ktc*y1**2
+    
+    return dy0dt, dy1dt, dy2dt, dq0dt, dq1dt, dq2dt
+
+
 def special_plot(variable, dataset, title):
     fig = go.Figure()
     for column in dataset.columns:
@@ -390,4 +407,4 @@ def special_plot_q3(all_var, all_var_datasets, title, v0=None, I=None):
                 xaxis_title='t', yaxis_title=f'{title}',\
                 height = 400, width = 600, font={'size':10})
 
-    fig.show()
+    fig.show()  

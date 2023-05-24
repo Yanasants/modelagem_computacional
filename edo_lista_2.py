@@ -8,7 +8,7 @@ class Edo:
   def __init__(self, y_inicial, dom, a,b, f_function, methods=[], \
                analytic_function=None, all_error=[], output=pd.DataFrame([]), \
               analytic_solution=False, bidimensional=False, tridimensional=False, \
-              quadridimensional=False):
+              quadridimensional=False, hexadimensional=False):
     self.y = y_inicial
     self.dom = dom
     self.a = a
@@ -20,6 +20,7 @@ class Edo:
     self.bidimensional = bidimensional
     self.tridimensional = tridimensional
     self.quadridimensional = quadridimensional
+    self.hexadimensional = hexadimensional
 
     self.h = (self.b - self.a)/self.dom
     self.size = self.dom-1
@@ -144,7 +145,7 @@ class Edo:
   @property
   def df_output(self):
     self.output['Passo'] = self.all_x
-    if self.bidimensional == False and self.tridimensional == False and self.quadridimensional==False:
+    if self.bidimensional == False and self.tridimensional == False and self.quadridimensional==False and self.hexadimensional==False:
       if 'euller' in self.methods:
         self.report_euller_1d()
         self.output['Y(t) Euller'] = self.all_y_euller
@@ -163,31 +164,40 @@ class Edo:
       if self.analytic_solution:
         self.analitica_1d()
         self.output['Y(t) Analítica'] = self.all_y_analitica
-    if self.bidimensional or self.tridimensional or self.quadridimensional:
+    if self.bidimensional or self.tridimensional or self.quadridimensional or self.hexadimensional:
       if 'euller' in self.methods:
         self.report_euller()
         self.output['X(t) Euller'] = self.all_y_euller[:,0]
         self.output['Y(t) Euller'] = self.all_y_euller[:,1]
-        if self.tridimensional or self.quadridimensional:
+        if self.tridimensional or self.quadridimensional or self.hexadimensional:
           self.output['Z(t) Euller'] = self.all_y_euller[:,2]
-        if self.quadridimensional:
+        if self.quadridimensional or self.hexadimensional:
           self.output['W(t) Euller'] = self.all_y_euller[:,3]
+        if self.hexadimensional:
+          self.output['U(t) Euller'] = self.all_y_euller[:,4]
+          self.output['V(t) Euller'] = self.all_y_euller[:,5]
       if 'heuen' in self.methods:
         self.report_heuen()
         self.output['X(t) Heuen'] = self.all_y_heuen[:,0]
         self.output['Y(t) Heuen'] = self.all_y_heuen[:,1]
-        if self.tridimensional or self.quadridimensional:
+        if self.tridimensional or self.quadridimensional or self.hexadimensional:
           self.output['Z(t) Heuen'] = self.all_y_heuen[:,2]
-        if self.quadridimensional:
+        if self.quadridimensional or self.hexadimensional:
           self.output['W(t) Heuen'] = self.all_y_heuen[:,3]
+        if self.hexadimensional:
+          self.output['U(t) Heuen'] = self.all_y_heuen[:,4]
+          self.output['V(t) Heuen'] = self.all_y_heuen[:,5]
       if 'rk4' in self.methods:
         self.report_rk4()
         self.output['X(t) Runge-Kutta 4ª Ordem'] = self.all_y_rk4[:,0]
         self.output['Y(t) Runge-Kutta 4ª Ordem'] = self.all_y_rk4[:,1]
-        if self.tridimensional or self.quadridimensional:
+        if self.tridimensional or self.quadridimensional or self.hexadimensional:
           self.output['Z(t) Runge-Kutta 4ª Ordem'] = self.all_y_rk4[:,2]
-        if self.quadridimensional:
+        if self.quadridimensional or self.hexadimensional:
           self.output['W(t) Runge-Kutta 4ª Ordem'] = self.all_y_rk4[:,3]
+        if self.hexadimensional:
+          self.output['U(t) Runge-Kutta 4ª Ordem'] = self.all_y_rk4[:,4]
+          self.output['V(t) Runge-Kutta 4ª Ordem'] = self.all_y_rk4[:,5]
       if self.analytic_solution:
         self.analitica()
         self.output['Y(t) Analítica'] = self.all_y_analitica[:,0]
@@ -202,7 +212,7 @@ class Edo:
     return self.output
 
 
-  def plot_output(self, variable=None):
+  def plot_output(self, variable=None, title=None):
     if self.bidimensional:
       yaxis = "X(t), Y(t)"
     elif self.tridimensional:
@@ -225,10 +235,18 @@ class Edo:
                         mode='lines',
                         name=column))
 
-      
-    fig.update_layout(title_text='Resultados por Método', title_x=0.5,\
-                xaxis_title='t', yaxis_title=f'{yaxis}',\
-                height = 400, width = 600, font={'size':10})
-
+    if title==None:
+      if variable == None:
+        fig.update_layout(title_text='Resultados por Método', title_x=0.5,\
+                    xaxis_title='t', yaxis_title=f'{yaxis}',\
+                    height = 400, width = 600, font={'size':10})
+      else:
+        fig.update_layout(title_text='Resultados por Método', title_x=0.5,\
+                    xaxis_title='t', yaxis_title=f'{variable}(t)',\
+                    height = 400, width = 600, font={'size':10})
+    else:
+      fig.update_layout(title_text='Resultados por Método', title_x=0.5,\
+                  xaxis_title='t', yaxis_title=f'{title}',\
+                  height = 400, width = 600, font={'size':10})
     fig.show()
  
