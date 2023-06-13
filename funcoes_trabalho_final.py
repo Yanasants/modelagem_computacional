@@ -6,7 +6,9 @@ params = {"gk":36, "gna":120, "gl":0.3, "vk":12, "vna":-115, "vl":-10.613, "cm":
 # Gráfico 02
 params_2 = {"gk":24.27, "gna":120, "gl":0.3, "vk":12, "vna":-115, "vl":-10.613, "cm":1}
 # Gráfico 03
-params_3 = {"gk":15.3, "gna":120, "gl":0.3, "vk":12, "vna":-115, "vl":-10.613, "cm":1}
+params_3 = {"gk":24.27, "gna":71.755, "gl":0.3, "vk":12, "vna":-115, "vl":-10.613, "cm":1}
+# Gráfico 04
+params_4 = {"gk":24.27, "gna":71.828, "gl":0.3, "vk":12, "vna":-115, "vl":-10.613, "cm":1}
 
 
 
@@ -61,8 +63,18 @@ def dh_params_fixo(V, h):
 
 
 
-def dV_dt(V, m, h, n, I_app):
-    return (I_app - params["gk"]*n**4*(V - params["vk"]) - params["gna"]*m**3*h* (V - params["vna"]) -  params["gl"]*(V - params["vl"]))/params["cm"]
+def dV_dt(V, m, h, n, I_app, graph=1):
+    if graph==1:
+        return (I_app - params["gk"]*n**4*(V - params["vk"]) - params["gna"]*m**3*h* (V - params["vna"]) -  params["gl"]*(V - params["vl"]))/params["cm"]
+    elif graph==2:
+        return (I_app - params_2["gk"]*n**4*(V - params_2["vk"]) - params_2["gna"]*m**3*h* (V - params_2["vna"]) -  params_2["gl"]*(V - params_2["vl"]))/params_2["cm"]
+    elif graph==3:
+        return (I_app - params_3["gk"]*n**4*(V - params_3["vk"]) - params_3["gna"]*m**3*h* (V - params_3["vna"]) -  params_3["gl"]*(V - params_3["vl"]))/params_3["cm"]
+    elif graph==4:
+        return (I_app - params_4["gk"]*n**4*(V - params_4["vk"]) - params_4["gna"]*m**3*h* (V - params_4["vna"]) -  params_4["gl"]*(V - params_4["vl"]))/params_4["cm"]
+
+
+
 
 
 def calc_current_density(V, m, h, n):
@@ -77,13 +89,13 @@ def calc_current_density(V, m, h, n):
 
 
 def gk_function(V, m, n, h):
-    Ik = params["gk"]*(n**4)*(V - params["vk"])
-    gk = Ik/(V-params["vk"])*(n**4)
+    Ik = params_2["gk"]*(n**4)*(V - params_2["vk"])
+    gk = Ik/(V-params_2["vk"])*(n**4)
     return gk
 
 def gna_function(V, m, n, h):
-    I_Na = params["gna"]*(m**3)*h*(V - params["vna"])
-    gna = I_Na/(V-params["vna"])*(m**3)*h
+    I_Na = params_2["gna"]*(m**3)*h*(V - params_2["vna"])
+    gna = I_Na/(V-params_2["vna"])*(m**3)*h
     return gna
 
 

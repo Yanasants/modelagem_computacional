@@ -6,7 +6,7 @@ from funcoes_trabalho_final import *
 
 class Edo:
 
-  def __init__(self, y_inicial, dom, a, b, I_app, I_function, v0, n0, m0, h0, fixo=False, methods=[], output=pd.DataFrame([])):
+  def __init__(self, y_inicial, dom, a, b, I_app, I_function, v0, n0, m0, h0, fixo=False, graph=1, methods=[], output=pd.DataFrame([])):
     self.y = y_inicial
     self.dom = dom
     self.a = a
@@ -16,6 +16,7 @@ class Edo:
     self.current_density = None
     self.methods = methods
     self.fixo = fixo
+    self.graph = graph
 
     self.step = (self.b - self.a)/self.dom
     self.size = self.dom-1
@@ -43,22 +44,22 @@ class Edo:
   # Alpha e Beta variando
   def rk4_step(self, V, n, m, h, dt, I_app):
 
-    k1_V = dt * dV_dt(V, m, h, n, I_app)
+    k1_V = dt * dV_dt(V, m, h, n, I_app, self.graph)
     k1_n = dt * dn_dt(V, n)
     k1_m = dt * dm_dt(V, m)
     k1_h = dt * dh_dt(V, h)
     
-    k2_V = dt * dV_dt(V + 0.5 * k1_V, m, h, n, I_app)
+    k2_V = dt * dV_dt(V + 0.5 * k1_V, m, h, n, I_app, self.graph)
     k2_n = dt * dn_dt(V + 0.5 * dt, n + 0.5 * k1_n)
     k2_m = dt * dm_dt(V + 0.5 * dt, m + 0.5 * k1_m)
     k2_h = dt * dh_dt(V + 0.5 * dt, h + 0.5 * k1_h)
 
-    k3_V = dt * dV_dt(V + 0.5 * k2_V, m, h, n, I_app)
+    k3_V = dt * dV_dt(V + 0.5 * k2_V, m, h, n, I_app, self.graph)
     k3_n = dt * dn_dt(V + 0.5 * dt, n + 0.5 * k2_n)
     k3_m = dt * dm_dt(V + 0.5 * dt, m + 0.5 * k2_m)
     k3_h = dt * dh_dt(V + 0.5 * dt, h + 0.5 * k2_h)
 
-    k4_V = dt * dV_dt(V + k3_V, m, h, n, I_app)
+    k4_V = dt * dV_dt(V + k3_V, m, h, n, I_app, self.graph)
     k4_n = dt * dn_dt(V + dt, n + k3_n)
     k4_m = dt * dm_dt(V + dt, m + k3_m)
     k4_h = dt * dh_dt(V + dt, h + k3_h)
