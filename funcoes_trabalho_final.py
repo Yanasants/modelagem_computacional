@@ -2,7 +2,7 @@ import numpy as np
 import plotly.graph_objects as go
 
 # Gráfico 01
-params = {"gk":36, "gna":120, "gl":0.3, "vk":12, "vna":-115, "vl":-10.613, "cm":1}
+params = {"gk":36, "gna":120, "gl":0.3, "vk":12, "vna":-115, "vl":-10.613, "cm":0.1}
 # Gráfico 02
 params_2 = {"gk":24.27, "gna":120, "gl":0.3, "vk":12, "vna":-115, "vl":-10.613, "cm":1}
 # Gráfico 03
@@ -63,7 +63,7 @@ def dh_params_fixo(V, h):
 
 
 
-def dV_dt(V, m, h, n, I_app, graph=1):
+def dV_dt(V, n, m, h, I_app, graph=1):
     if graph==1:
         return (I_app - params["gk"]*n**4*(V - params["vk"]) - params["gna"]*m**3*h* (V - params["vna"]) -  params["gl"]*(V - params["vl"]))/params["cm"]
     elif graph==2:
@@ -77,7 +77,7 @@ def dV_dt(V, m, h, n, I_app, graph=1):
 
 
 
-def calc_current_density(V, m, h, n):
+def calc_current_density(V, n, m, h):
     # Ionica individual
     I_Na = params["gna"]*(m**3)*h*(V - params["vna"])
     I_K = params["gk"]*(n**4)*(V - params["vk"])
@@ -88,19 +88,19 @@ def calc_current_density(V, m, h, n):
     return I_total
 
 
-def gk_function(V, m, n, h):
+def gk_function(V, n, m, h):
     Ik = params_2["gk"]*(n**4)*(V - params_2["vk"])
     gk = Ik/(V-params_2["vk"])*(n**4)
     return gk
 
-def gna_function(V, m, n, h):
+def gna_function(V, n, m, h):
     I_Na = params_2["gna"]*(m**3)*h*(V - params_2["vna"])
     gna = I_Na/(V-params_2["vna"])*(m**3)*h
     return gna
 
 
-def I_function(V, m, h, n, I_app):
-    return params["cm"]* dV_dt(V, m, h, n, I_app) + calc_current_density(V, m, h, n)
+def I_function_total(V, n, m,h):
+    return params["cm"]* V + calc_current_density(V, n, m, h)
 
 def plot_output(variable=None, title=None, dfs=None):
     fig = go.Figure()
@@ -112,11 +112,11 @@ def plot_output(variable=None, title=None, dfs=None):
                             name=f'{column} | {df_key}'))
             
     fig.update_layout(title_text=f'{title}', title_x=0.5,\
-                    xaxis_title='t', yaxis_title=f'{variable}(t)',\
+                    xaxis_title='Tempo (ms)', yaxis_title=f'{variable}(t)',\
                     height = 400, width = 600, font={'size':10})
     fig.show()
 
-def plot_condutancias(variable=None, dfs=None):
+def plot_condutancias_rk4(variable=None, dfs=None):
     fig = go.Figure()
     for df_key in dfs.keys():
         if variable=="gk":
@@ -131,6 +131,25 @@ def plot_condutancias(variable=None, dfs=None):
                     name=f'{variable} {df_key}'))
         
     fig.update_layout(title_text=f'Condutância do {element}', title_x=0.5,\
-                    xaxis_title='t', yaxis_title=f'{variable} (t)',\
+                    xaxis_title='Tempo (ms)', yaxis_title=f'{variable} (t)',\
+                    height = 400, width = 600, font={'size':10})
+    fig.show()
+
+def plot_condutancias(variable=None, dfs=None):
+    fig = go.Figure()
+    for df_key in dfs.keys():
+        if variable=="gk":
+            var_k = gk_function(V=dfs[df_key].all_V, m=dfs[df_key].all_m, n=dfs[df_key].all_n, h=dfs[df_key].all_h)
+            element = "potássio"
+        elif variable=="gna":
+            var_k = gna_function(V=dfs[df_key].all_V, m=dfs[df_key].all_m, n=dfs[df_key].all_n, h=dfs[df_key].all_h)
+            element = "sódio"
+
+        fig.add_trace(go.Scatter(x=dfs[df_key].output['Passo'], y=var_k,
+                    mode='lines',
+                    name=f'{variable} {df_key}'))
+        
+    fig.update_layout(title_text=f'Condutância do {element}', title_x=0.5,\
+                    xaxis_title='Tempo (ms)', yaxis_title=f'{variable} (t)',\
                     height = 400, width = 600, font={'size':10})
     fig.show()
